@@ -99,7 +99,7 @@ module.exports = {
       'https://symbol-search.tradingview.com/symbol_search',
       {
         params: {
-          text: search.replace(/ /g, '%20'),
+          text: search,
           type: filter,
         },
         headers: {
@@ -120,7 +120,7 @@ module.exports = {
         symbol: s.symbol,
         description: s.description,
         type: s.type,
-        getTA: () => this.getTA(id),
+        getTA: () => module.exports.getTA(id),
       };
     });
   },
@@ -169,7 +169,7 @@ module.exports = {
         symbol: s.symbol,
         description: s.description,
         type: s.type,
-        getTA: () => this.getTA(id),
+        getTA: () => module.exports.getTA(id),
       };
     });
   },
@@ -214,7 +214,7 @@ module.exports = {
       'https://www.tradingview.com/pubscripts-suggest-json',
       {
         params: {
-          search: search.replace(/ /g, '%20'),
+          search,
         },
         validateStatus,
       },
@@ -378,9 +378,12 @@ module.exports = {
    * @returns {Promise<User>} Token
    */
   async loginUser(username, password, remember = true, UA = 'TWAPI/3.0') {
+    const body = new URLSearchParams({ username, password });
+    if (remember) body.append('remember', 'on');
+
     const { data, headers } = await axios.post(
       'https://www.tradingview.com/accounts/signin/',
-      `username=${username}&password=${password}${remember ? '&remember=on' : ''}`,
+      body.toString(),
       {
         headers: {
           referer: 'https://www.tradingview.com',
@@ -458,8 +461,8 @@ module.exports = {
       };
     }
 
-    if (headers.location !== location) {
-      return this.getUser(session, signature, headers.location);
+    if (headers.location && headers.location !== location) {
+      return module.exports.getUser(session, signature, headers.location);
     }
 
     throw new Error('Wrong or expired sessionid/signature');

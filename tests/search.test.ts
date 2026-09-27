@@ -25,6 +25,15 @@ describe('Search functions', () => {
 
     expect(indicators.length).toBeGreaterThan(10);
   });
+
+  it('indicator search: "relative strength" has community results', async () => {
+    console.log('Searching indicator: "relative strength"');
+    const indicators = await searchIndicator('relative strength');
+    const community = indicators.filter((i) => i.author.username !== '@TRADINGVIEW@');
+    console.log('Found', community.length, 'community indicators');
+
+    expect(community.length).toBeGreaterThan(10);
+  });
 });
 
 describe('Technical Analysis', () => {

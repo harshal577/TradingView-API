@@ -19,6 +19,8 @@ module.exports = (quoteSession) => class QuoteMarket {
 
   #lastData = {};
 
+  #closed = false;
+
   #callbacks = {
     loaded: [],
     data: [],
@@ -121,12 +123,17 @@ module.exports = (quoteSession) => class QuoteMarket {
 
   /** Close this listener */
   close() {
-    if (this.#symbolListeners[this.#symbolKey].length <= 1) {
-      quoteSession.send('quote_remove_symbols', [
-        quoteSession.sessionID,
-        this.#symbolKey,
-      ]);
-    }
-    delete this.#symbolListeners[this.#symbolKey][this.#symbolListenerID];
+    if (this.#closed) return;
+    this.#closed = true;
+
+    const listeners = this.#symbolListeners[this.#symbolKey];
+    delete listeners[this.#symbolListenerID];
+    if (listeners.some(Boolean)) return;
+
+    quoteSession.send('quote_remove_symbols', [
+      quoteSession.sessionID,
+      this.#symbolKey,
+    ]);
+    delete this.#symbolListeners[this.#symbolKey];
   }
 };

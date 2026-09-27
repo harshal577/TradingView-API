@@ -10,7 +10,7 @@ describe('AllErrors', () => {
     next();
   });
 
-  it.skip('throws an error when an invalid token is set', async () => {
+  it('throws an error when an invalid token is set', async () => {
     console.log('Testing "Credentials error" error:');
 
     const client = new TradingView.Client({

@@ -266,7 +266,7 @@ module.exports = (chartSession) => class ChartStudy {
           changes.push('plots');
         }
 
-        if (data.ns && data.ns.d) {
+        if (data && data.ns && data.ns.d) {
           const parsed = JSON.parse(data.ns.d);
 
           if (parsed.graphicsCmds) {
@@ -283,7 +283,7 @@ module.exports = (chartSession) => class ChartStudy {
                 }
 
                 if (instruction.action === 'one') {
-                  delete this.#graphic[instruction.type][instruction.id];
+                  delete this.#graphic[instruction.type]?.[instruction.id];
                 }
                 // Can an 'instruction' contains other things ?
               });
@@ -347,7 +347,7 @@ module.exports = (chartSession) => class ChartStudy {
           if (parsed.data && parsed.data.report) updateStrategyReport(parsed.data.report);
         }
 
-        if (data.ns.indexes && typeof data.ns.indexes === 'object') {
+        if (data && data.ns && data.ns.indexes && typeof data.ns.indexes === 'object') {
           this.#indexes = data.ns.indexes;
         }
 
